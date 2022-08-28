@@ -21,6 +21,9 @@ tinyprof: main.c tinyelf.c tinyelf.h uniq_counter.c uniq_counter.h
 	clang ${C_FLAGS} ${FLAGS} ${SAN_FLAGS} main.c tinyelf.c uniq_counter.c \
 		-o ${BUILD_DIR}/tinyprof
 
+time_consumer: time_consumer.c
+	clang ${C_FLAGS} ${FLAGS} time_consumer.c -o ${BUILD_DIR}/time_consumer
+
 release:
 	clang ${C_FLAGS} -O2 main.c tinyelf.c uniq_counter.c -o ${BUILD_DIR}/tinyprof
 
