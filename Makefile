@@ -11,21 +11,20 @@ build_dir:
 	mkdir -p ${BUILD_DIR}
 
 test_uniq_counter: build_dir
-	clang ${C_FLAGS} ${FLAGS} ${SAN_FLAGS} -DTEST -c uniq_counter.c \
-		-o ${BUILD_DIR}/uniq_counter.o
-	clang++ ${FLAGS} ${CPP_FLAGS} ${SAN_FLAGS} -DTEST test_uniq_counter.cc \
-		${BUILD_DIR}/uniq_counter.o -o ${BUILD_DIR}/test_uniq_counter
+	clang++ ${FLAGS} ${CPP_FLAGS} ${SAN_FLAGS} -DTEST uniq_counter.cc \
+		test_uniq_counter.cc -o ${BUILD_DIR}/test_uniq_counter
 	./${BUILD_DIR}/test_uniq_counter
 
-tinyprof: main.c tinyelf.c tinyelf.h uniq_counter.c uniq_counter.h
-	clang ${C_FLAGS} ${FLAGS} ${SAN_FLAGS} main.c tinyelf.c uniq_counter.c \
+tinyprof: tinyprof.c tinyelf.c tinyelf.h uniq_counter.c uniq_counter.h
+	clang ${C_FLAGS} ${FLAGS} ${SAN_FLAGS} tinyprof.c tinyelf.c uniq_counter.c \
 		-o ${BUILD_DIR}/tinyprof
 
 time_consumer: time_consumer.c
 	clang ${C_FLAGS} ${FLAGS} time_consumer.c -o ${BUILD_DIR}/time_consumer
 
 release:
-	clang ${C_FLAGS} -O2 main.c tinyelf.c uniq_counter.c -o ${BUILD_DIR}/tinyprof
+	clang ${C_FLAGS} -O2 tinyprof.c tinyelf.c uniq_counter.c \
+		-o ${BUILD_DIR}/tinyprof
 
 format:
 	clang-format -i *.c *.cc *.h

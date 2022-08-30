@@ -2,15 +2,13 @@
 #include <random>
 #include <unordered_map>
 
-extern "C" {
 #include "uniq_counter.h"
-}
 
 using std::cout;
 using std::endl;
 
 bool oracle_test() {
-  Counter *counter = new_counter(128);
+  Counter counter(128);
   std::unordered_map<uint64_t, uint64_t> oracle;
 
   std::random_device r;
@@ -23,12 +21,12 @@ bool oracle_test() {
 
     oracle[v] = oracle[v] + 1;
 
-    counter_incr(counter, v);
+    counter.incr(v);
   }
 
   // make sure every key in our counter has the same value as the oracle
   for (auto iter : oracle) {
-    entry_t *v = counter_get(counter, iter.first);
+    entry_t *v = counter.get(iter.first);
     if (v->addr != iter.first) {
       cout << "expected address: " << iter.first << " to equal " << v->addr
            << endl;
@@ -41,8 +39,6 @@ bool oracle_test() {
       return false;
     }
   }
-
-  counter_destroy(counter);
 
   //  cout << "useful stats:" << endl;
   //  cout << "\toracle load factor: " << oracle.load_factor() << endl;
