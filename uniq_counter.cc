@@ -20,7 +20,6 @@ Counter::~Counter() { delete[] entries; }
 void Counter::incr(uint64_t key) {
   // mod a power of 2 is very fast.
   uint32_t bucket = key % nbuckets;
-
   entry_t entry = entries[bucket];
 
   // we should never hash more than one address to an entry.
@@ -37,31 +36,3 @@ void Counter::incr(uint64_t key) {
 
   entries[bucket] = entry;
 }
-
-#ifdef TEST
-#include <stdio.h>
-
-typedef struct counter_impl counter_impl;
-
-bool uniq_counter_test_main(void) {
-  // nbuckets should be a power of 2
-  Counter c(100);
-  if (c.entries != NULL) {
-    return false;
-  }
-
-  Counter c2(128);
-  // overflow should not add new values
-  c2.incr(10);
-  c2.incr(138);
-
-  entry_t *v = c2.get(138);
-  if (v->addr != 10 || v->count != 1) {
-    fprintf(stderr, "hash table overflowed: addr: %lu  count: %lu\n", v->addr,
-            v->count);
-    return false;
-  }
-
-  return true;
-}
-#endif

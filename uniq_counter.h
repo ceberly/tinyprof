@@ -19,8 +19,4 @@ struct Counter {
   void incr(uint64_t key);
 };
 
-#ifdef TEST
-bool uniq_counter_test_main(void);
-#endif
-
 #endif

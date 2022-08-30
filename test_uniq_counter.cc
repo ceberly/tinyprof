@@ -1,11 +1,9 @@
-#include <iostream>
+#include <cstdio>
+
 #include <random>
 #include <unordered_map>
 
 #include "uniq_counter.h"
-
-using std::cout;
-using std::endl;
 
 bool oracle_test() {
   Counter counter(128);
@@ -28,14 +26,14 @@ bool oracle_test() {
   for (auto iter : oracle) {
     entry_t *v = counter.get(iter.first);
     if (v->addr != iter.first) {
-      cout << "expected address: " << iter.first << " to equal " << v->addr
-           << endl;
+      fprintf(stdout, "expected address %lu to equal %lu\n", iter.first,
+              v->addr);
       return false;
     }
 
     if (v->count != iter.second) {
-      cout << "expected key " << iter.first << " to be " << iter.second
-           << ". got " << v->count << " instead." << endl;
+      fprintf(stdout, "expected key %lu to be %lu. got %lu instead.\n",
+              iter.first, iter.second, v->count);
       return false;
     }
   }
@@ -47,6 +45,28 @@ bool oracle_test() {
   return true;
 }
 
+bool uniq_counter_test_main(void) {
+  // nbuckets should be a power of 2
+  Counter c(100);
+  if (c.entries != NULL) {
+    return false;
+  }
+
+  Counter c2(128);
+  // overflow should not add new values
+  c2.incr(10);
+  c2.incr(138);
+
+  entry_t *v = c2.get(138);
+  if (v->addr != 10 || v->count != 1) {
+    fprintf(stderr, "hash table overflowed: addr: %lu  count: %lu\n", v->addr,
+            v->count);
+    return false;
+  }
+
+  return true;
+}
+
 int main() {
   if (!uniq_counter_test_main())
     return 1;
@@ -54,6 +74,7 @@ int main() {
   if (!oracle_test())
     return 1;
 
-  cout << "passed." << endl;
+  fprintf(stdout, "passed.\n");
+
   return 0;
 }
